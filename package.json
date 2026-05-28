@@ -1,0 +1,33 @@
+{
+    "name": "@designliquido/delegua-lsp",
+    "version": "0.0.0",
+    "description": "Language Server Protocol para linguagem Delégua e dialetos de Portugol.",
+    "main": "./dist/index.js",
+    "bin": {
+        "delegua-lsp": "./dist/servidor.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "build:watch": "tsc --watch",
+        "servidor": "node ./dist/servidor.js",
+        "testes-unitarios": "jest --coverage"
+    },
+    "dependencies": {
+        "@designliquido/birl": "^0.6.7",
+        "@designliquido/delegua": "^1.23.4",
+        "@designliquido/mapler": "^0.7.7",
+        "@designliquido/portugol-studio": "^0.11.7",
+        "@designliquido/potigol": "^0.11.7",
+        "@designliquido/visualg": "^0.9.7",
+        "vscode-languageserver": "^9.0.1",
+        "vscode-languageserver-textdocument": "^1.0.12"
+    },
+    "devDependencies": {
+        "@types/jest": "^29.5.14",
+        "@types/node": "^22.0.0",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.3.4",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.0.0"
+    }
+}
