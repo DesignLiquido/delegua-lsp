@@ -1,9 +1,8 @@
-import * as fs from 'fs';
-import * as path from 'path';
-
 import { Position, Range, TextEdit, WorkspaceEdit } from 'vscode-languageserver-types';
 
+import { AmbienteLSP } from '../interfaces/ambiente-lsp-interface';
 import { DocumentoLSP } from '../interfaces/documento-lsp-interface';
+import { caminhoParaUri, varrerArquivosWorkspace } from '../utilitarios/varredura-workspace';
 
 function escaparRegex(texto: string): string {
     return texto.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -54,11 +53,6 @@ function identificarOcorrenciasLinha(textoLinha: string, palavra: string): numbe
     return ocorrencias;
 }
 
-function caminhoParaUri(caminho: string): string {
-    const normalizado = caminho.replace(/\\/g, '/');
-    return normalizado.startsWith('/') ? `file://${normalizado}` : `file:///${normalizado}`;
-}
-
 function coletarEdicoesDeLinhas(linhas: string[], palavra: string, novoNome: string): TextEdit[] {
     const edicoes: TextEdit[] = [];
 
@@ -80,38 +74,10 @@ function coletarEdicoesDeLinhas(linhas: string[], palavra: string, novoNome: str
     return edicoes;
 }
 
-function varrerArquivosWorkspace(pastaRaiz: string, extensoes: string[]): string[] {
-    const arquivos: string[] = [];
-
-    function varrer(diretorio: string): void {
-        let entradas: fs.Dirent[];
-        try {
-            entradas = fs.readdirSync(diretorio, { withFileTypes: true });
-        } catch {
-            return;
-        }
-
-        for (const entrada of entradas) {
-            if (entrada.name === 'node_modules' || entrada.name.startsWith('.')) {
-                continue;
-            }
-            const caminhoCompleto = path.join(diretorio, entrada.name);
-            if (entrada.isDirectory()) {
-                varrer(caminhoCompleto);
-            } else if (extensoes.some(ext => entrada.name.endsWith(`.${ext}`))) {
-                arquivos.push(caminhoCompleto);
-            }
-        }
-    }
-
-    varrer(pastaRaiz);
-    return arquivos;
-}
-
 /**
  * Prepara o intervalo de renomeação (highlight da palavra atual).
  */
-export function prepareRename(documento: DocumentoLSP, posicao: Position): Range | undefined {
+export function prepararRenomeacao(documento: DocumentoLSP, posicao: Position): Range | undefined {
     const linhaTexto = documento.linhas[posicao.line] ?? '';
     const intervalo = obterPalavraNoIntervalo(linhaTexto, posicao.character);
     if (!intervalo) {
@@ -127,12 +93,13 @@ export function prepareRename(documento: DocumentoLSP, posicao: Position): Range
 /**
  * Produz as edições de renomeação em todos os arquivos do workspace.
  */
-export function provideRenameEdits(
+export async function proverEdicoesPorRenomeacao(
     documento: DocumentoLSP,
     posicao: Position,
     novoNome: string,
-    pastaWorkspace: string
-): WorkspaceEdit | undefined {
+    pastaWorkspace: string,
+    ambiente: AmbienteLSP
+): Promise<WorkspaceEdit | undefined> {
     if (!/^[_a-zA-Z][_a-zA-Z0-9]*$/.test(novoNome)) {
         return undefined;
     }
@@ -157,8 +124,8 @@ export function provideRenameEdits(
     }
 
     // Edições em outros arquivos do workspace
-    const extensoes = ['delegua', 'egua'];
-    const arquivos = varrerArquivosWorkspace(pastaWorkspace, extensoes);
+    const extensoes = ['delegua'];
+    const arquivos = await varrerArquivosWorkspace(ambiente, pastaWorkspace, extensoes);
 
     for (const caminhoArquivo of arquivos) {
         const uriArquivo = caminhoParaUri(caminhoArquivo);
@@ -166,10 +133,8 @@ export function provideRenameEdits(
             continue;
         }
 
-        let conteudo: string;
-        try {
-            conteudo = fs.readFileSync(caminhoArquivo, 'utf-8');
-        } catch {
+        const conteudo = await ambiente.sistemaArquivos.lerArquivoTexto(caminhoArquivo);
+        if (conteudo === undefined) {
             continue;
         }
 

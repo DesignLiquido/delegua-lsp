@@ -428,7 +428,7 @@ function completudesParaDelegua(
 /**
  * Fornece sugestões de completude para o símbolo na posição dada.
  */
-export function provideCompletionItems(documento: DocumentoLSP, posicao: Position): CompletionItem[] {
+export function proverItensCompletude(documento: DocumentoLSP, posicao: Position): CompletionItem[] {
     const resultadoAnalise = obterResultado(documento.uri);
     const linhaTexto = documento.linhas[posicao.line] ?? '';
     const textoAntesPosicao = linhaTexto.substring(0, posicao.character);

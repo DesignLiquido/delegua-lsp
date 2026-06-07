@@ -1,6 +1,3 @@
-import * as path from 'path';
-import * as fs from 'fs';
-
 import { AnalisadorSemantico } from '@designliquido/delegua/analisador-semantico';
 import { Lexador, LexadorPitugues } from '@designliquido/delegua/lexador';
 import { AvaliadorSintatico, AvaliadorSintaticoPitugues } from '@designliquido/delegua/avaliador-sintatico';
@@ -32,6 +29,7 @@ import { LexadorVisuAlg, AvaliadorSintaticoVisuAlg, AnalisadorSemanticoVisuAlg }
 import { definirResultado, obterDiagnosticos, obterResultadoValido } from './analise/cache-analise';
 import { definirDefinicoes } from './analise/cache-definicoes';
 import { DocumentoLSP } from './interfaces/documento-lsp-interface';
+import { obterExtensao } from './utilitarios/documento';
 
 const mapaSeveridadeDiagnosticos: Record<string | number, DiagnosticSeverity> = {
     0: DiagnosticSeverity.Error,
@@ -43,15 +41,6 @@ const mapaSeveridadeDiagnosticos: Record<string | number, DiagnosticSeverity> = 
     'informacao': DiagnosticSeverity.Information,
     'dica': DiagnosticSeverity.Hint,
 };
-
-function obterExtensao(documento: DocumentoLSP): string {
-    if (documento.languageId === 'delegua-testes') {
-        return 'delegua';
-    }
-
-    const partes = documento.nomeArquivo.split('.');
-    return partes.length > 1 ? partes[partes.length - 1] : '';
-}
 
 function formatarDiagnosticosAvaliacaoSintatica(
     erros: any[],

@@ -7,6 +7,8 @@ import {
     TextDocumentSyncKind,
     CompletionParams,
     DefinitionParams,
+    DocumentFormattingParams,
+    HoverParams,
     ReferenceParams,
     RenameParams,
     PrepareRenameParams,
@@ -14,11 +16,14 @@ import {
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
+import { criarAmbienteNode } from './ambiente/ambiente-node';
 import { executarAnalises } from './analisador';
 import {
-    provideCompletionItems,
-    provideDefinition,
-    provideReferences,
+    proverItensCompletude,
+    proverDefinicao,
+    proverFormatacao,
+    proverDocumentacaoEmCodigo,
+    proverReferencias,
     prepareRename,
     provideRenameEdits,
 } from './capacidades';
@@ -26,6 +31,7 @@ import { DocumentoLSP } from './interfaces/documento-lsp-interface';
 
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
+const ambiente = criarAmbienteNode();
 
 let pastaWorkspace = '';
 
@@ -60,6 +66,8 @@ connection.onInitialize((params: InitializeParams): InitializeResult => {
                 resolveProvider: false,
             },
             definitionProvider: true,
+            documentFormattingProvider: true,
+            hoverProvider: true,
             referencesProvider: true,
             renameProvider: {
                 prepareProvider: true,
@@ -79,7 +87,7 @@ connection.onCompletion((params: CompletionParams) => {
     if (!doc) return [];
 
     const documento = textDocumentParaDocumentoLSP(doc);
-    return provideCompletionItems(documento, params.position);
+    return proverItensCompletude(documento, params.position);
 });
 
 connection.onDefinition((params: DefinitionParams) => {
@@ -87,19 +95,36 @@ connection.onDefinition((params: DefinitionParams) => {
     if (!doc) return undefined;
 
     const documento = textDocumentParaDocumentoLSP(doc);
-    return provideDefinition(documento, params.position) ?? null;
+    return proverDefinicao(documento, params.position, ambiente) ?? null;
 });
 
-connection.onReferences((params: ReferenceParams) => {
+connection.onDocumentFormatting(async (params: DocumentFormattingParams) => {
+    const doc = documents.get(params.textDocument.uri);
+    if (!doc) return null;
+
+    const documento = textDocumentParaDocumentoLSP(doc);
+    return await proverFormatacao(documento) ?? null;
+});
+
+connection.onHover((params: HoverParams) => {
+    const doc = documents.get(params.textDocument.uri);
+    if (!doc) return null;
+
+    const documento = textDocumentParaDocumentoLSP(doc);
+    return proverDocumentacaoEmCodigo(documento, params.position) ?? null;
+});
+
+connection.onReferences(async (params: ReferenceParams) => {
     const doc = documents.get(params.textDocument.uri);
     if (!doc) return [];
 
     const documento = textDocumentParaDocumentoLSP(doc);
-    return provideReferences(
+    return proverReferencias(
         documento,
         params.position,
         params.context.includeDeclaration,
-        pastaWorkspace
+        pastaWorkspace,
+        ambiente
     );
 });
 
@@ -111,12 +136,12 @@ connection.onPrepareRename((params: PrepareRenameParams) => {
     return prepareRename(documento, params.position) ?? null;
 });
 
-connection.onRenameRequest((params: RenameParams) => {
+connection.onRenameRequest(async (params: RenameParams) => {
     const doc = documents.get(params.textDocument.uri);
     if (!doc) return null;
 
     const documento = textDocumentParaDocumentoLSP(doc);
-    return provideRenameEdits(documento, params.position, params.newName, pastaWorkspace) ?? null;
+    return (await provideRenameEdits(documento, params.position, params.newName, pastaWorkspace, ambiente)) ?? null;
 });
 
 documents.listen(connection);

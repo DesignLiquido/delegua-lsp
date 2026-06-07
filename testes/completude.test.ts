@@ -2,7 +2,7 @@ import { CompletionItemKind, InsertTextFormat } from 'vscode-languageserver-type
 import { Var } from '@designliquido/delegua/declaracoes';
 
 import { expirarTudo, definirResultado } from '../fontes/analise/cache-analise';
-import { provideCompletionItems } from '../fontes/capacidades/completude';
+import { proverItensCompletude } from '../fontes/capacidades/completude';
 import { DocumentoLSP } from '../fontes/interfaces/documento-lsp-interface';
 
 function criarVarDeclaracao(lexema: string, tipo: string): Var {
@@ -27,11 +27,11 @@ describe('completude', () => {
         expirarTudo();
     });
 
-    describe('provideCompletionItems()', () => {
+    describe('proverItensCompletude()', () => {
         describe('Sem contexto especial', () => {
             it('retorna funções nativas de Delégua quando não há ponto antes do cursor', () => {
                 const doc = criarDocumento(['es']);
-                const itens = provideCompletionItems(doc, { line: 0, character: 2 });
+                const itens = proverItensCompletude(doc, { line: 0, character: 2 });
 
                 const nomes = itens.map(i => i.label);
                 expect(nomes).toContain('escreva');
@@ -39,7 +39,7 @@ describe('completude', () => {
 
             it('retorna função escreva com kind Function', () => {
                 const doc = criarDocumento(['']);
-                const itens = provideCompletionItems(doc, { line: 0, character: 0 });
+                const itens = proverItensCompletude(doc, { line: 0, character: 0 });
 
                 const escreva = itens.find(i => i.label === 'escreva');
                 expect(escreva).toBeDefined();
@@ -59,7 +59,7 @@ describe('completude', () => {
                     analisadorSemantico: { diagnosticos: [] } as any,
                 });
 
-                const itens = provideCompletionItems(doc, { line: 1, character: 5 });
+                const itens = proverItensCompletude(doc, { line: 1, character: 5 });
                 expect(itens.length).toBeGreaterThan(0);
             });
 
@@ -74,7 +74,7 @@ describe('completude', () => {
                     analisadorSemantico: { diagnosticos: [] } as any,
                 });
 
-                const itens = provideCompletionItems(doc, { line: 1, character: 6 });
+                const itens = proverItensCompletude(doc, { line: 1, character: 6 });
                 expect(itens.length).toBeGreaterThan(0);
             });
 
@@ -89,7 +89,7 @@ describe('completude', () => {
                     analisadorSemantico: { diagnosticos: [] } as any,
                 });
 
-                const itens = provideCompletionItems(doc, { line: 1, character: 5 });
+                const itens = proverItensCompletude(doc, { line: 1, character: 5 });
                 expect(itens.length).toBeGreaterThan(0);
             });
 
@@ -107,7 +107,7 @@ describe('completude', () => {
                     analisadorSemantico: { diagnosticos: [] } as any,
                 });
 
-                const itens = provideCompletionItems(doc, { line: 1, character: 2 });
+                const itens = proverItensCompletude(doc, { line: 1, character: 2 });
                 expect(itens).toHaveLength(0);
             });
         });
@@ -121,7 +121,7 @@ describe('completude', () => {
                     'funcao teste() {}',
                 ];
                 const doc = criarDocumento(linhas);
-                const itens = provideCompletionItems(doc, { line: 1, character: 4 });
+                const itens = proverItensCompletude(doc, { line: 1, character: 4 });
 
                 expect(itens.length).toBeGreaterThan(0);
                 expect(itens.every(i => i.label.toString().startsWith('@'))).toBe(true);
@@ -130,7 +130,7 @@ describe('completude', () => {
             it('retorna etiquetas filtradas pelo prefixo @param', () => {
                 const linhas = ['/**', ' * @param', ' */', 'funcao f() {}'];
                 const doc = criarDocumento(linhas);
-                const itens = provideCompletionItems(doc, { line: 1, character: 9 });
+                const itens = proverItensCompletude(doc, { line: 1, character: 9 });
 
                 expect(itens.length).toBeGreaterThan(0);
                 expect(itens.every(i => i.label.toString().startsWith('@param'))).toBe(true);
@@ -139,7 +139,7 @@ describe('completude', () => {
             it('etiquetas de documentário usam InsertTextFormat.Snippet', () => {
                 const linhas = ['/**', ' * @', ' */'];
                 const doc = criarDocumento(linhas);
-                const itens = provideCompletionItems(doc, { line: 1, character: 4 });
+                const itens = proverItensCompletude(doc, { line: 1, character: 4 });
 
                 expect(itens.every(i => i.insertTextFormat === InsertTextFormat.Snippet)).toBe(true);
             });
@@ -161,7 +161,7 @@ describe('completude', () => {
                     analisadorSemantico: { diagnosticos: [] } as any,
                 });
 
-                const itens = provideCompletionItems(doc, { line: 1, character: 0 });
+                const itens = proverItensCompletude(doc, { line: 1, character: 0 });
                 const nomes = itens.map(i => i.label);
                 // funções nativas devem continuar aparecendo
                 expect(nomes).toContain('escreva');
@@ -171,7 +171,7 @@ describe('completude', () => {
         describe('Liquido — completude dentro de rota', () => {
             it('retorna primitivas de liquido quando texto termina com "liquido."', () => {
                 const doc = criarDocumento(['liquido.']);
-                const itens = provideCompletionItems(doc, { line: 0, character: 8 });
+                const itens = proverItensCompletude(doc, { line: 0, character: 8 });
 
                 const nomes = itens.map(i => i.label);
                 expect(nomes).toContain('rotaGet');
@@ -180,7 +180,7 @@ describe('completude', () => {
 
             it('completude de rotaGet usa InsertTextFormat.Snippet', () => {
                 const doc = criarDocumento(['liquido.']);
-                const itens = provideCompletionItems(doc, { line: 0, character: 8 });
+                const itens = proverItensCompletude(doc, { line: 0, character: 8 });
 
                 const rotaGet = itens.find(i => i.label === 'rotaGet');
                 expect(rotaGet).toBeDefined();

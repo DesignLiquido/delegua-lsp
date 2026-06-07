@@ -1,11 +1,11 @@
-import * as fs from 'fs';
-import * as path from 'path';
-
 import { Classe, Declaracao } from '@designliquido/delegua/declaracoes';
 import { Location, Position } from 'vscode-languageserver-types';
 
 import { obterResultado } from '../analise/cache-analise';
+import { AmbienteLSP } from '../interfaces/ambiente-lsp-interface';
 import { DocumentoLSP } from '../interfaces/documento-lsp-interface';
+import { obterPalavraNoIntervalo } from '../utilitarios/texto';
+import { caminhoParaUri, varrerArquivosWorkspace } from '../utilitarios/varredura-workspace';
 
 function escaparRegex(texto: string): string {
     return texto.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -13,25 +13,6 @@ function escaparRegex(texto: string): string {
 
 function eCaracterPalavra(caractere: string): boolean {
     return /[_a-zA-Z0-9]/.test(caractere);
-}
-
-function obterPalavraNoIntervalo(linha: string, caractere: number): { palavra: string; inicio: number } | undefined {
-    const regex = /[_a-zA-Z0-9]/;
-    if (!regex.test(linha[caractere] ?? '')) {
-        return undefined;
-    }
-
-    let inicio = caractere;
-    while (inicio > 0 && regex.test(linha[inicio - 1])) {
-        inicio--;
-    }
-
-    let fim = caractere;
-    while (fim < linha.length && regex.test(linha[fim])) {
-        fim++;
-    }
-
-    return { palavra: linha.slice(inicio, fim), inicio };
 }
 
 function encontrarOcorrenciasLinha(textoLinha: string, palavra: string): number[] {
@@ -50,11 +31,6 @@ function encontrarOcorrenciasLinha(textoLinha: string, palavra: string): number[
     }
 
     return ocorrencias;
-}
-
-function caminhoParaUri(caminho: string): string {
-    const normalizado = caminho.replace(/\\/g, '/');
-    return normalizado.startsWith('/') ? `file://${normalizado}` : `file:///${normalizado}`;
 }
 
 function coletarPosicoesDeclaracao(declaracoes: Declaracao[], palavra: string, uriPadrao: string): Set<string> {
@@ -90,43 +66,16 @@ function coletarPosicoesDeclaracao(declaracoes: Declaracao[], palavra: string, u
     return posicoes;
 }
 
-function varrerArquivosWorkspace(pastaRaiz: string, extensoes: string[]): string[] {
-    const arquivos: string[] = [];
-
-    function varrer(diretorio: string): void {
-        let entradas: fs.Dirent[];
-        try {
-            entradas = fs.readdirSync(diretorio, { withFileTypes: true });
-        } catch {
-            return;
-        }
-
-        for (const entrada of entradas) {
-            if (entrada.name === 'node_modules' || entrada.name.startsWith('.')) {
-                continue;
-            }
-            const caminhoCompleto = path.join(diretorio, entrada.name);
-            if (entrada.isDirectory()) {
-                varrer(caminhoCompleto);
-            } else if (extensoes.some(ext => entrada.name.endsWith(`.${ext}`))) {
-                arquivos.push(caminhoCompleto);
-            }
-        }
-    }
-
-    varrer(pastaRaiz);
-    return arquivos;
-}
-
 /**
  * Encontra todas as referências ao símbolo na posição dada.
  */
-export function provideReferences(
+export async function proverReferencias(
     documento: DocumentoLSP,
     posicao: Position,
     incluirDeclaracao: boolean,
-    pastaWorkspace: string
-): Location[] {
+    pastaWorkspace: string,
+    ambiente: AmbienteLSP
+): Promise<Location[]> {
     const linhaTexto = documento.linhas[posicao.line] ?? '';
     const intervalo = obterPalavraNoIntervalo(linhaTexto, posicao.character);
 
@@ -135,15 +84,13 @@ export function provideReferences(
     }
 
     const { palavra } = intervalo;
-    const extensoes = ['delegua', 'egua'];
-    const arquivos = varrerArquivosWorkspace(pastaWorkspace, extensoes);
+    const extensoes = ['delegua'];
+    const arquivos = await varrerArquivosWorkspace(ambiente, pastaWorkspace, extensoes);
     const localizacoes: Location[] = [];
 
     for (const caminhoArquivo of arquivos) {
-        let conteudo: string;
-        try {
-            conteudo = fs.readFileSync(caminhoArquivo, 'utf-8');
-        } catch {
+        const conteudo = await ambiente.sistemaArquivos.lerArquivoTexto(caminhoArquivo);
+        if (conteudo === undefined) {
             continue;
         }
 

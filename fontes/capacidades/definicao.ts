@@ -1,34 +1,14 @@
-import * as path from 'path';
-import * as fs from 'fs';
-
 import { Classe, Const, Declaracao, Var } from '@designliquido/delegua/declaracoes';
 import { Location, Position, Range } from 'vscode-languageserver-types';
 
 import { obterResultado } from '../analise/cache-analise';
 import { obterDefinicoesPorContexto } from '../analise/cache-definicoes';
+import { AmbienteLSP } from '../interfaces/ambiente-lsp-interface';
 import { DocumentoLSP } from '../interfaces/documento-lsp-interface';
+import { obterPalavraNoIntervalo } from '../utilitarios/texto';
 
-function normalizarCaminho(caminho: string): string {
-    return path.normalize(caminho).replace(/\\/g, '/').toLowerCase();
-}
-
-function obterPalavraNoIntervalo(linha: string, caractere: number): { palavra: string; inicio: number; fim: number } | undefined {
-    const regex = /[_a-zA-Z0-9]/;
-    if (!regex.test(linha[caractere] ?? '')) {
-        return undefined;
-    }
-
-    let inicio = caractere;
-    while (inicio > 0 && regex.test(linha[inicio - 1])) {
-        inicio--;
-    }
-
-    let fim = caractere;
-    while (fim < linha.length && regex.test(linha[fim])) {
-        fim++;
-    }
-
-    return { palavra: linha.slice(inicio, fim), inicio, fim };
+function normalizarCaminho(ambiente: AmbienteLSP, caminho: string): string {
+    return ambiente.caminhos.normalizar(caminho).replace(/\\/g, '/').toLowerCase();
 }
 
 function caminhoParaUri(caminho: string): string {
@@ -81,6 +61,7 @@ function localizarEmDeclaracoes(declaracoes: Declaracao[], palavra: string, uriP
 }
 
 function localizarSimboloImportado(
+    ambiente: AmbienteLSP,
     declaracoes: Declaracao[],
     palavra: string,
     linhaTexto: string,
@@ -97,24 +78,24 @@ function localizarSimboloImportado(
     }
 
     const caminhoRelativo = correspondencia[3];
-    const diretorioAtual = path.dirname(uriDocumento.replace(/^file:\/\/\//, '').replace(/^file:\/\//, ''));
+    const diretorioAtual = ambiente.caminhos.dirname(uriDocumento.replace(/^file:\/\/\//, '').replace(/^file:\/\//, ''));
     let caminhoAbsoluto: string;
 
     if (caminhoRelativo.startsWith('./') || caminhoRelativo.startsWith('../')) {
-        caminhoAbsoluto = path.resolve(diretorioAtual, caminhoRelativo);
+        caminhoAbsoluto = ambiente.caminhos.resolver(diretorioAtual, caminhoRelativo);
     } else {
-        caminhoAbsoluto = path.join(diretorioAtual, 'node_modules', caminhoRelativo);
+        caminhoAbsoluto = ambiente.caminhos.juntar(diretorioAtual, 'node_modules', caminhoRelativo);
     }
 
     const caminhosCandidatos = new Set<string>([
-        normalizarCaminho(caminhoAbsoluto),
-        normalizarCaminho(`${caminhoAbsoluto}.delegua`),
+        normalizarCaminho(ambiente, caminhoAbsoluto),
+        normalizarCaminho(ambiente, `${caminhoAbsoluto}.delegua`),
     ]);
 
     if (!caminhoRelativo.startsWith('./') && !caminhoRelativo.startsWith('../')) {
-        const fragmentoNodeModules = normalizarCaminho(`/node_modules/${caminhoRelativo}/`);
+        const fragmentoNodeModules = normalizarCaminho(ambiente, `/node_modules/${caminhoRelativo}/`);
         for (const definicaoCache of obterDefinicoesEmCache()) {
-            const caminhoNormalizado = normalizarCaminho(definicaoCache);
+            const caminhoNormalizado = normalizarCaminho(ambiente, definicaoCache);
             if (caminhoNormalizado.includes(fragmentoNodeModules)) {
                 caminhosCandidatos.add(caminhoNormalizado);
             }
@@ -127,7 +108,7 @@ function localizarSimboloImportado(
         if (simbolo?.lexema !== palavra || !caminho) {
             return false;
         }
-        return caminhosCandidatos.has(normalizarCaminho(caminho));
+        return caminhosCandidatos.has(normalizarCaminho(ambiente, caminho));
     });
 
     if (!declaracao) {
@@ -203,7 +184,7 @@ function localizarPropriedadeClasse(declaracoes: Declaracao[], palavra: string, 
 /**
  * Localiza a definição do símbolo na posição dada dentro do documento.
  */
-export function provideDefinition(documento: DocumentoLSP, posicao: Position): Location | undefined {
+export function proverDefinicao(documento: DocumentoLSP, posicao: Position, ambiente: AmbienteLSP): Location | undefined {
     const linhaTexto = documento.linhas[posicao.line] ?? '';
     const intervalo = obterPalavraNoIntervalo(linhaTexto, posicao.character);
     if (!intervalo) {
@@ -221,7 +202,7 @@ export function provideDefinition(documento: DocumentoLSP, posicao: Position): L
         return undefined;
     }
 
-    const localizacaoImportado = localizarSimboloImportado(declaracoes, palavra, linhaTexto, documento.uri);
+    const localizacaoImportado = localizarSimboloImportado(ambiente, declaracoes, palavra, linhaTexto, documento.uri);
     if (localizacaoImportado) {
         return localizacaoImportado;
     }
