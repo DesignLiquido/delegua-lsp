@@ -1,6 +1,6 @@
 {
     "name": "@designliquido/delegua-lsp",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "Language Server Protocol para linguagem Delégua e dialetos de Portugol.",
     "main": "./dist/index.js",
     "bin": {
