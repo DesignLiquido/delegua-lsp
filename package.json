@@ -8,7 +8,7 @@
     },
     "scripts": {
         "copiar-arquivos-pacote": "yarn copyfiles -V ./package.json ./dist && yarn copyfiles -V ./README.md ./dist",
-        "empacotar": "yarn rimraf ./dist && tsc && yarn copiar-arquivos-pacote",
+        "empacotar": "yarn rimraf ./dist && yarn tsc && yarn copiar-arquivos-pacote",
         "servidor": "node ./dist/servidor.js",
         "testes-unitarios": "jest --coverage"
     },
