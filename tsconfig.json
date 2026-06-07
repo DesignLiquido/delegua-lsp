@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "ES2020",
-        "module": "commonjs",
+        "module": "node16",
         "lib": ["ES2020"],
         "outDir": "./dist",
         "rootDir": "./fontes",
@@ -11,8 +11,7 @@
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
-        "moduleResolution": "node",
-        "ignoreDeprecations": "6.0"
+        "moduleResolution": "node16"
     },
     "include": ["fontes/**/*"],
     "exclude": ["node_modules", "dist"]
