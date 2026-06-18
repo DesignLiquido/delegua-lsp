@@ -7,7 +7,7 @@
         "delegua-lsp": "./dist/servidor.js"
     },
     "scripts": {
-        "copiar-arquivos-pacote": "yarn copyfiles -V ./package.json ./dist && yarn copyfiles -V ./README.md ./dist",
+        "copiar-arquivos-pacote": "yarn copyfiles -V ./package.json ./dist && yarn copyfiles -V ./README.md ./dist && node -e \"const fs=require('fs');const p=JSON.parse(fs.readFileSync('./dist/package.json','utf8'));p.main='./index.js';p.bin={'delegua-lsp':'./servidor.js'};delete p.files;fs.writeFileSync('./dist/package.json',JSON.stringify(p,null,4))\"",
         "empacotar": "yarn rimraf ./dist && yarn tsc && yarn copiar-arquivos-pacote",
         "servidor": "node ./dist/servidor.js",
         "testes-unitarios": "jest --coverage"
@@ -22,16 +22,24 @@
         "registry": "https://registry.npmjs.org"
     },
     "dependencies": {
-        "@designliquido/birl": "^0.6.7",
-        "@designliquido/delegua": "^1.23.4",
-        "@designliquido/mapler": "^0.7.7",
-        "@designliquido/portugol-studio": "^0.11.7",
-        "@designliquido/potigol": "^0.11.7",
-        "@designliquido/visualg": "^0.9.7",
         "vscode-languageserver": "^9.0.1",
         "vscode-languageserver-textdocument": "^1.0.12"
     },
+    "peerDependencies": {
+        "@designliquido/birl": "^0.6.12",
+        "@designliquido/delegua": "^1.24.4",
+        "@designliquido/mapler": "^0.7.12",
+        "@designliquido/portugol-studio": "^0.11.12",
+        "@designliquido/potigol": "^0.11.12",
+        "@designliquido/visualg": "^0.9.12"
+    },
     "devDependencies": {
+        "@designliquido/birl": "^0.6.12",
+        "@designliquido/delegua": "^1.24.4",
+        "@designliquido/mapler": "^0.7.12",
+        "@designliquido/portugol-studio": "^0.11.12",
+        "@designliquido/potigol": "^0.11.12",
+        "@designliquido/visualg": "^0.9.12",
         "@types/jest": "^29.5.14",
         "@types/node": "^22.0.0",
         "copyfiles": "^2.4.1",
