@@ -4,7 +4,7 @@ import { AmbienteLSP } from '../interfaces/ambiente-lsp-interface';
  * Converte um caminho de arquivo para uma URI `file://`.
  */
 export function caminhoParaUri(caminho: string): string {
-    const normalizado = caminho.replace(/\\/g, '/');
+    const normalizado = caminho.replace(/\\/g, '/').replace(/^([A-Za-z]):/, (_, letra) => letra.toLowerCase() + ':');
     return normalizado.startsWith('/') ? `file://${normalizado}` : `file:///${normalizado}`;
 }
 
