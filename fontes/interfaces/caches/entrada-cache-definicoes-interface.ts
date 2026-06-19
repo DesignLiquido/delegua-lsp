@@ -1,9 +1,9 @@
 import { Declaracao } from "@designliquido/delegua/declaracoes";
 
-export interface EntradaCacheDefinicoes {
+export interface EntradaCacheDefinicoesInterface {
     definicoes: { [nomeTipo: string]: Declaracao };
     criadoEm: number;
     expiraEm: number;
-    ttlMs: number;
+    tempoVidaMs: number;
     motivo?: string;
 }

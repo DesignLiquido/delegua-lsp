@@ -1,4 +1,4 @@
-export interface OpcoesValidacaoResultado {
+export interface OpcoesValidacaoResultadoInterface {
     versaoDocumento?: number;
     hashConteudo?: number;
 }

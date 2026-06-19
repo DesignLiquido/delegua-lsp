@@ -2,8 +2,8 @@ import { Classe, Declaracao } from '@designliquido/delegua/declaracoes';
 import { Location, Position } from 'vscode-languageserver-types';
 
 import { obterResultado } from '../analise/cache-analise';
-import { AmbienteLSP } from '../interfaces/ambiente-lsp-interface';
-import { DocumentoLSP } from '../interfaces/documento-lsp-interface';
+import { AmbienteLSPInterface } from '../interfaces/ambiente-lsp-interface';
+import { DocumentoLSPInterface } from '../interfaces/documento-lsp-interface';
 import { obterPalavraNoIntervalo } from '../utilitarios/texto';
 import { caminhoParaUri, varrerArquivosWorkspace } from '../utilitarios/varredura-workspace';
 
@@ -70,11 +70,11 @@ function coletarPosicoesDeclaracao(declaracoes: Declaracao[], palavra: string, u
  * Encontra todas as referências ao símbolo na posição dada.
  */
 export async function proverReferencias(
-    documento: DocumentoLSP,
+    documento: DocumentoLSPInterface,
     posicao: Position,
     incluirDeclaracao: boolean,
     pastaWorkspace: string,
-    ambiente: AmbienteLSP
+    ambiente: AmbienteLSPInterface
 ): Promise<Location[]> {
     const linhaTexto = documento.linhas[posicao.line] ?? '';
     const intervalo = obterPalavraNoIntervalo(linhaTexto, posicao.character);

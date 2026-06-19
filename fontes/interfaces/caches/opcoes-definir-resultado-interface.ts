@@ -1,5 +1,5 @@
-export interface OpcoesDefinirResultado {
-    ttlMs?: number;
+export interface OpcoesDefinirResultadoInterface {
+    tempoVidaMs?: number;
     versaoDocumento?: number;
     hashConteudo?: number;
     diagnosticos?: any[];

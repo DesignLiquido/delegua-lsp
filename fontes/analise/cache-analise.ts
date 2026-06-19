@@ -1,9 +1,9 @@
 import { ResultadoAnaliseInterface } from '../interfaces/resultado-analise-interface';
-import { EntradaCacheAnalise, OpcoesDefinirResultado, OpcoesValidacaoResultado } from '../interfaces/caches';
+import { EntradaCacheAnaliseInterface, OpcoesDefinirResultadoInterface, OpcoesValidacaoResultadoInterface } from '../interfaces/caches';
 
-export const TTL_PADRAO_CACHE_ANALISE_MS = 10 * 60 * 1000;
+export const TEMPO_VIDA_PADRAO_CACHE_ANALISE_MS = 10 * 60 * 1000;
 
-const cache = new Map<string, EntradaCacheAnalise>();
+const cache = new Map<string, EntradaCacheAnaliseInterface>();
 const indiceDependenciasPorArquivo = new Map<string, Set<string>>();
 
 function normalizarCaminhoArquivo(caminho: string): string {
@@ -63,7 +63,7 @@ function removerEntrada(uri: string): void {
     cache.delete(uri);
 }
 
-function obterEntradaValida(uri: string): EntradaCacheAnalise | undefined {
+function obterEntradaValida(uri: string): EntradaCacheAnaliseInterface | undefined {
     const entrada = cache.get(uri);
     if (!entrada) {
         return undefined;
@@ -77,9 +77,9 @@ function obterEntradaValida(uri: string): EntradaCacheAnalise | undefined {
     return entrada;
 }
 
-export function definirResultado(uri: string, resultado: ResultadoAnaliseInterface, opcoes?: OpcoesDefinirResultado) {
+export function definirResultado(uri: string, resultado: ResultadoAnaliseInterface, opcoes?: OpcoesDefinirResultadoInterface) {
     const agora = Date.now();
-    const ttlMs = opcoes?.ttlMs ?? TTL_PADRAO_CACHE_ANALISE_MS;
+    const tempoVidaMs = opcoes?.tempoVidaMs ?? TEMPO_VIDA_PADRAO_CACHE_ANALISE_MS;
     const entradaAnterior = cache.get(uri);
 
     if (entradaAnterior) {
@@ -93,8 +93,8 @@ export function definirResultado(uri: string, resultado: ResultadoAnaliseInterfa
         diagnosticos: opcoes?.diagnosticos ?? [],
         dependenciasArquivos,
         criadoEm: agora,
-        expiraEm: agora + ttlMs,
-        ttlMs,
+        expiraEm: agora + tempoVidaMs,
+        tempoVidaMs,
         versaoDocumento: opcoes?.versaoDocumento,
         hashConteudo: opcoes?.hashConteudo,
         motivo: opcoes?.motivo,
@@ -105,7 +105,7 @@ export function obterResultado(uri: string): ResultadoAnaliseInterface | undefin
     return obterEntradaValida(uri)?.resultado;
 }
 
-export function obterResultadoValido(uri: string, opcoes?: OpcoesValidacaoResultado): ResultadoAnaliseInterface | undefined {
+export function obterResultadoValido(uri: string, opcoes?: OpcoesValidacaoResultadoInterface): ResultadoAnaliseInterface | undefined {
     const entrada = obterEntradaValida(uri);
     if (!entrada) {
         return undefined;

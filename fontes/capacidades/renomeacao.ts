@@ -1,7 +1,7 @@
 import { Position, Range, TextEdit, WorkspaceEdit } from 'vscode-languageserver-types';
 
-import { AmbienteLSP } from '../interfaces/ambiente-lsp-interface';
-import { DocumentoLSP } from '../interfaces/documento-lsp-interface';
+import { AmbienteLSPInterface } from '../interfaces/ambiente-lsp-interface';
+import { DocumentoLSPInterface } from '../interfaces/documento-lsp-interface';
 import { caminhoParaUri, varrerArquivosWorkspace } from '../utilitarios/varredura-workspace';
 
 function escaparRegex(texto: string): string {
@@ -77,7 +77,7 @@ function coletarEdicoesDeLinhas(linhas: string[], palavra: string, novoNome: str
 /**
  * Prepara o intervalo de renomeação (highlight da palavra atual).
  */
-export function prepararRenomeacao(documento: DocumentoLSP, posicao: Position): Range | undefined {
+export function prepararRenomeacao(documento: DocumentoLSPInterface, posicao: Position): Range | undefined {
     const linhaTexto = documento.linhas[posicao.line] ?? '';
     const intervalo = obterPalavraNoIntervalo(linhaTexto, posicao.character);
     if (!intervalo) {
@@ -94,11 +94,11 @@ export function prepararRenomeacao(documento: DocumentoLSP, posicao: Position): 
  * Produz as edições de renomeação em todos os arquivos do workspace.
  */
 export async function proverEdicoesPorRenomeacao(
-    documento: DocumentoLSP,
+    documento: DocumentoLSPInterface,
     posicao: Position,
     novoNome: string,
     pastaWorkspace: string,
-    ambiente: AmbienteLSP
+    ambiente: AmbienteLSPInterface
 ): Promise<WorkspaceEdit | undefined> {
     if (!/^[_a-zA-Z][_a-zA-Z0-9]*$/.test(novoNome)) {
         return undefined;

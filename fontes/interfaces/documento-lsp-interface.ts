@@ -2,7 +2,7 @@
  * Representa um documento de texto aberto no editor LSP.
  * Substitui `vscode.TextDocument` sem dependência do VS Code API.
  */
-export interface DocumentoLSP {
+export interface DocumentoLSPInterface {
     /** URI do documento (ex: file:///caminho/arquivo.delegua) */
     uri: string;
     /** Caminho do arquivo no sistema de arquivos */

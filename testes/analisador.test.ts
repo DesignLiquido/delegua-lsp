@@ -1,8 +1,8 @@
 import { expirarTudo } from '../fontes/analise/cache-analise';
 import { executarAnalises } from '../fontes/analisador';
-import { DocumentoLSP } from '../fontes/interfaces/documento-lsp-interface';
+import { DocumentoLSPInterface } from '../fontes/interfaces/documento-lsp-interface';
 
-function criarDocumento(texto: string, extensao: string, versao = 1): DocumentoLSP {
+function criarDocumento(texto: string, extensao: string, versao = 1): DocumentoLSPInterface {
     const uri = `file:///teste.${extensao}`;
     return {
         uri,

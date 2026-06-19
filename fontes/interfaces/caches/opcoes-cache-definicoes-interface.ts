@@ -1,4 +1,4 @@
-export interface OpcoesDefinirDefinicoes {
-    ttlMs?: number;
+export interface OpcoesCacheDefinicoesInterface {
+    tempoVidaMs?: number;
     motivo?: string;
 }

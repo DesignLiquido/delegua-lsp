@@ -1,8 +1,4 @@
-export interface IntervaloPalavra {
-    palavra: string;
-    inicio: number;
-    fim: number;
-}
+import { IntervaloPalavraInterface } from "../interfaces";
 
 const REGEX_CARACTERE_PALAVRA = /[_a-zA-Z0-9]/;
 
@@ -11,7 +7,7 @@ const REGEX_CARACTERE_PALAVRA = /[_a-zA-Z0-9]/;
  * posição informada na linha. Retorna `undefined` se a posição não estiver
  * sobre um caractere de palavra.
  */
-export function obterPalavraNoIntervalo(linha: string, caractere: number): IntervaloPalavra | undefined {
+export function obterPalavraNoIntervalo(linha: string, caractere: number): IntervaloPalavraInterface | undefined {
     if (!REGEX_CARACTERE_PALAVRA.test(linha[caractere] ?? '')) {
         return undefined;
     }

@@ -1,0 +1,15 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "rootDir": "..",
+        "types": ["jest", "node"],
+        "strict": false,
+        "noEmit": true,
+        "module": "commonjs",
+        "moduleResolution": "node"
+    },
+    "include": [
+        "../fontes/**/*",
+        "**/*"
+    ]
+}

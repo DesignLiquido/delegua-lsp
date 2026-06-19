@@ -1,10 +1,4 @@
-/**
- * Entrada de um diretório listado pelo sistema de arquivos do ambiente.
- */
-export interface EntradaDiretorio {
-    nome: string;
-    ehDiretorio: boolean;
-}
+import { EntradaDiretorioInterface } from "./entrada-diretorio-interface";
 
 /**
  * Acesso a arquivos e diretórios, fornecido pelo ambiente de execução.
@@ -16,5 +10,5 @@ export interface SistemaArquivosInterface {
     /** Lê o conteúdo de um arquivo como texto UTF-8. `undefined` em caso de falha. */
     lerArquivoTexto(caminho: string): Promise<string | undefined>;
     /** Lista as entradas de um diretório. `[]` em caso de falha. */
-    listarDiretorio(caminho: string): Promise<EntradaDiretorio[]>;
+    listarDiretorio(caminho: string): Promise<EntradaDiretorioInterface[]>;
 }

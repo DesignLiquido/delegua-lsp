@@ -1,4 +1,5 @@
 import { PrimitivaInterface } from '@designliquido/delegua/interfaces';
+
 import { funcoesNativasDelegua } from './funcoes-nativas';
 import { FuncaoNativaOuMetodoPrimitiva, ParametroAssinaturaMetodo } from './tipos';
 

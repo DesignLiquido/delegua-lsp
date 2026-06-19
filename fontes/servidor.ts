@@ -27,7 +27,7 @@ import {
     prepareRename,
     provideRenameEdits,
 } from './capacidades';
-import { DocumentoLSP } from './interfaces/documento-lsp-interface';
+import { DocumentoLSPInterface } from './interfaces/documento-lsp-interface';
 
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
@@ -42,7 +42,7 @@ function obterPastaWorkspace(pastas: WorkspaceFolder[] | null | undefined): stri
     return uriPasta.replace(/^file:\/\/\//, '').replace(/^file:\/\//, '').replace(/%3A/gi, ':');
 }
 
-function textDocumentParaDocumentoLSP(doc: TextDocument): DocumentoLSP {
+function textDocumentParaDocumentoLSP(doc: TextDocument): DocumentoLSPInterface {
     const texto = doc.getText();
     const linhas = texto.split('\n');
     return {

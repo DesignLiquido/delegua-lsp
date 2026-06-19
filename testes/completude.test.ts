@@ -3,14 +3,14 @@ import { Var } from '@designliquido/delegua/declaracoes';
 
 import { expirarTudo, definirResultado } from '../fontes/analise/cache-analise';
 import { proverItensCompletude } from '../fontes/capacidades/completude';
-import { DocumentoLSP } from '../fontes/interfaces/documento-lsp-interface';
+import { DocumentoLSPInterface } from '../fontes/interfaces/documento-lsp-interface';
 
 function criarVarDeclaracao(lexema: string, tipo: string): Var {
     const simbolo: any = { lexema, tipo: 'IDENTIFICADOR', literal: null, linha: 1, hashArquivo: 0 };
     return new Var(simbolo, undefined, tipo);
 }
 
-function criarDocumento(linhas: string[], uri = 'file:///teste.delegua'): DocumentoLSP {
+function criarDocumento(linhas: string[], uri = 'file:///teste.delegua'): DocumentoLSPInterface {
     const texto = linhas.join('\n');
     return {
         uri,

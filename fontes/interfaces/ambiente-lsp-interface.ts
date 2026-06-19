@@ -7,7 +7,7 @@ import { SistemaArquivosInterface } from './sistema-arquivos-interface';
  * inicialização. Permite que `delegua-lsp` funcione fora de um processo Node
  * sem importar diretamente módulos nativos como `fs`/`path`.
  */
-export interface AmbienteLSP {
+export interface AmbienteLSPInterface {
     sistemaArquivos: SistemaArquivosInterface;
     caminhos: ManipuladorCaminhosInterface;
 }

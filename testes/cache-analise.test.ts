@@ -8,7 +8,7 @@ import {
     expirarTudo,
     limparResultadosExpirados,
     obterEstatisticasCache,
-    TTL_PADRAO_CACHE_ANALISE_MS,
+    TEMPO_VIDA_PADRAO_CACHE_ANALISE_MS,
 } from '../fontes/analise/cache-analise';
 import { ResultadoAnaliseInterface } from '../fontes/interfaces/resultado-analise-interface';
 
@@ -96,7 +96,7 @@ describe('cache-analise', () => {
 
         it('expira entrada com TTL negativo', () => {
             const uri = 'file:///ttl.delegua';
-            definirResultado(uri, criarResultadoFake(), { ttlMs: -1 });
+            definirResultado(uri, criarResultadoFake(), { tempoVidaMs: -1 });
 
             // ttlMs=-1 garante expiraEm no passado
             expect(obterResultado(uri)).toBeUndefined();
@@ -146,8 +146,8 @@ describe('cache-analise', () => {
 
     describe('limparResultadosExpirados', () => {
         it('remove apenas entradas expiradas e retorna contagem', () => {
-            definirResultado('file:///expirado.delegua', criarResultadoFake(), { ttlMs: -1 });
-            definirResultado('file:///valido.delegua', criarResultadoFake(), { ttlMs: TTL_PADRAO_CACHE_ANALISE_MS });
+            definirResultado('file:///expirado.delegua', criarResultadoFake(), { tempoVidaMs: -1 });
+            definirResultado('file:///valido.delegua', criarResultadoFake(), { tempoVidaMs: TEMPO_VIDA_PADRAO_CACHE_ANALISE_MS });
 
             const removidos = limparResultadosExpirados();
 

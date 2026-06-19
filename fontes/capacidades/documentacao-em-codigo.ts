@@ -4,7 +4,7 @@ import { Hover, MarkupKind, Position, Range } from 'vscode-languageserver-types'
 import { obterResultado } from '../analise/cache-analise';
 import { funcoesNativasDelegua } from '../bibliotecas/formatadores';
 import { FuncaoNativaOuMetodoPrimitiva } from '../bibliotecas/tipos';
-import { DocumentoLSP } from '../interfaces/documento-lsp-interface';
+import { DocumentoLSPInterface } from '../interfaces/documento-lsp-interface';
 import { obterPalavraNoIntervalo } from '../utilitarios/texto';
 
 function obterTextoDeConteudo(conteudo: unknown): string {
@@ -78,7 +78,7 @@ function construirConteudoParaFuncaoNativa(funcaoNativa: FuncaoNativaOuMetodoPri
  * Fornece informações de _hover_ (tipo, assinatura ou documentação) para o
  * símbolo na posição dada dentro do documento.
  */
-export function proverDocumentacaoEmCodigo(documento: DocumentoLSP, posicao: Position): Hover | null {
+export function proverDocumentacaoEmCodigo(documento: DocumentoLSPInterface, posicao: Position): Hover | null {
     const resultado = obterResultado(documento.uri);
     if (!resultado) {
         return null;

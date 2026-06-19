@@ -1,8 +1,8 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import * as sistemaArquivos from 'fs';
+import * as caminho from 'path';
 
-import { AmbienteLSP } from '../interfaces/ambiente-lsp-interface';
-import { EntradaDiretorio, SistemaArquivosInterface } from '../interfaces/sistema-arquivos-interface';
+import { AmbienteLSPInterface } from '../interfaces/ambiente-lsp-interface';
+import { EntradaDiretorioInterface, SistemaArquivosInterface } from '../interfaces';
 import { ManipuladorCaminhosInterface } from '../interfaces/manipulador-caminhos-interface';
 
 /**
@@ -15,15 +15,15 @@ function criarSistemaArquivosNode(): SistemaArquivosInterface {
     return {
         async lerArquivoTexto(caminho: string): Promise<string | undefined> {
             try {
-                return fs.readFileSync(caminho, 'utf-8');
+                return sistemaArquivos.readFileSync(caminho, 'utf-8');
             } catch {
                 return undefined;
             }
         },
 
-        async listarDiretorio(caminho: string): Promise<EntradaDiretorio[]> {
+        async listarDiretorio(caminho: string): Promise<EntradaDiretorioInterface[]> {
             try {
-                return fs.readdirSync(caminho, { withFileTypes: true })
+                return sistemaArquivos.readdirSync(caminho, { withFileTypes: true })
                     .map(entrada => ({ nome: entrada.name, ehDiretorio: entrada.isDirectory() }));
             } catch {
                 return [];
@@ -34,14 +34,14 @@ function criarSistemaArquivosNode(): SistemaArquivosInterface {
 
 function criarManipuladorCaminhosNode(): ManipuladorCaminhosInterface {
     return {
-        juntar: (...partes: string[]) => path.join(...partes),
-        dirname: (caminho: string) => path.dirname(caminho),
-        resolver: (base: string, relativo: string) => path.resolve(base, relativo),
-        normalizar: (caminho: string) => path.normalize(caminho),
+        juntar: (...partes: string[]) => caminho.join(...partes),
+        dirname: (caminhoParam: string) => caminho.dirname(caminhoParam),
+        resolver: (base: string, relativo: string) => caminho.resolve(base, relativo),
+        normalizar: (caminhoParam: string) => caminho.normalize(caminhoParam),
     };
 }
 
-export function criarAmbienteNode(): AmbienteLSP {
+export function criarAmbienteNode(): AmbienteLSPInterface {
     return {
         sistemaArquivos: criarSistemaArquivosNode(),
         caminhos: criarManipuladorCaminhosNode(),

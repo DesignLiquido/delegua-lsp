@@ -7,7 +7,7 @@ import { FormatadorVisuAlg } from '@designliquido/visualg';
 import { Range, TextEdit } from 'vscode-languageserver-types';
 
 import { obterResultado } from '../analise/cache-analise';
-import { DocumentoLSP } from '../interfaces/documento-lsp-interface';
+import { DocumentoLSPInterface } from '../interfaces/documento-lsp-interface';
 import { obterExtensao } from '../utilitarios/documento';
 
 const TAMANHO_INDENTACAO_PADRAO = 4;
@@ -63,7 +63,7 @@ function obterIntervaloDocumentoCompleto(linhas: string[]): Range {
  * nomenclatura etc.) ainda não são lidas de `InitializationOptions`: por
  * ora o servidor aplica apenas formatação, sem transformações de AST.
  */
-export async function proverFormatacao(documento: DocumentoLSP): Promise<TextEdit[] | null> {
+export async function proverFormatacao(documento: DocumentoLSPInterface): Promise<TextEdit[] | null> {
     const extensao = obterExtensao(documento);
     const formatador = obterFormatador(extensao, detectarQuebraLinha(documento.texto));
     if (!formatador) {

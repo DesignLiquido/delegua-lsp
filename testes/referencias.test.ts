@@ -4,11 +4,9 @@ import * as path from 'path';
 
 import { criarAmbienteNode } from '../fontes/ambiente/ambiente-node';
 import { proverReferencias } from '../fontes/capacidades/referencias';
-import { AmbienteLSP } from '../fontes/interfaces/ambiente-lsp-interface';
-import { EntradaDiretorio } from '../fontes/interfaces/sistema-arquivos-interface';
-import { DocumentoLSP } from '../fontes/interfaces/documento-lsp-interface';
+import { AmbienteLSPInterface, EntradaDiretorioInterface, DocumentoLSPInterface } from '../fontes/interfaces';
 
-function criarDocumentoDeTexto(texto: string, nomeArquivo = 'teste.delegua'): DocumentoLSP {
+function criarDocumentoDeTexto(texto: string, nomeArquivo = 'teste.delegua'): DocumentoLSPInterface {
     const uri = `file:///${nomeArquivo.replace(/\\/g, '/')}`;
     const linhas = texto.split('\n');
     return { uri, nomeArquivo, texto, linhas, versao: 1, languageId: 'delegua' };
@@ -18,16 +16,16 @@ function criarDocumentoDeTexto(texto: string, nomeArquivo = 'teste.delegua'): Do
  * Ambiente em memória, sem nenhum acesso a disco — prova que `proverReferencias`
  * funciona com qualquer implementação de `AmbienteLSP`, não apenas a do Node.js.
  */
-function criarAmbienteEmMemoria(arquivos: Record<string, string>): AmbienteLSP {
+function criarAmbienteEmMemoria(arquivos: Record<string, string>): AmbienteLSPInterface {
     return {
         sistemaArquivos: {
             async lerArquivoTexto(caminho: string) {
                 return arquivos[caminho];
             },
-            async listarDiretorio(caminho: string): Promise<EntradaDiretorio[]> {
+            async listarDiretorio(caminho: string): Promise<EntradaDiretorioInterface[]> {
                 const prefixo = caminho.endsWith('/') ? caminho : `${caminho}/`;
                 const nomes = new Set<string>();
-                const entradas: EntradaDiretorio[] = [];
+                const entradas: EntradaDiretorioInterface[] = [];
 
                 for (const arquivo of Object.keys(arquivos)) {
                     if (!arquivo.startsWith(prefixo)) {

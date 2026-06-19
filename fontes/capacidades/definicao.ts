@@ -1,13 +1,13 @@
 import { Classe, Const, Declaracao, Var } from '@designliquido/delegua/declaracoes';
-import { Location, Position, Range } from 'vscode-languageserver-types';
+import { Location, Position } from 'vscode-languageserver-types';
 
 import { obterResultado } from '../analise/cache-analise';
 import { obterDefinicoesPorContexto } from '../analise/cache-definicoes';
-import { AmbienteLSP } from '../interfaces/ambiente-lsp-interface';
-import { DocumentoLSP } from '../interfaces/documento-lsp-interface';
+import { AmbienteLSPInterface } from '../interfaces/ambiente-lsp-interface';
+import { DocumentoLSPInterface } from '../interfaces/documento-lsp-interface';
 import { obterPalavraNoIntervalo } from '../utilitarios/texto';
 
-function normalizarCaminho(ambiente: AmbienteLSP, caminho: string): string {
+function normalizarCaminho(ambiente: AmbienteLSPInterface, caminho: string): string {
     return ambiente.caminhos.normalizar(caminho).replace(/\\/g, '/').toLowerCase();
 }
 
@@ -61,7 +61,7 @@ function localizarEmDeclaracoes(declaracoes: Declaracao[], palavra: string, uriP
 }
 
 function localizarSimboloImportado(
-    ambiente: AmbienteLSP,
+    ambiente: AmbienteLSPInterface,
     declaracoes: Declaracao[],
     palavra: string,
     linhaTexto: string,
@@ -184,7 +184,7 @@ function localizarPropriedadeClasse(declaracoes: Declaracao[], palavra: string, 
 /**
  * Localiza a definição do símbolo na posição dada dentro do documento.
  */
-export function proverDefinicao(documento: DocumentoLSP, posicao: Position, ambiente: AmbienteLSP): Location | undefined {
+export function proverDefinicao(documento: DocumentoLSPInterface, posicao: Position, ambiente: AmbienteLSPInterface): Location | undefined {
     const linhaTexto = documento.linhas[posicao.line] ?? '';
     const intervalo = obterPalavraNoIntervalo(linhaTexto, posicao.character);
     if (!intervalo) {

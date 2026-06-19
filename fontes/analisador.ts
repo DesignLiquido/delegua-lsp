@@ -28,7 +28,7 @@ import { LexadorVisuAlg, AvaliadorSintaticoVisuAlg, AnalisadorSemanticoVisuAlg }
 
 import { definirResultado, obterDiagnosticos, obterResultadoValido } from './analise/cache-analise';
 import { definirDefinicoes } from './analise/cache-definicoes';
-import { DocumentoLSP } from './interfaces/documento-lsp-interface';
+import { DocumentoLSPInterface } from './interfaces/documento-lsp-interface';
 import { obterExtensao } from './utilitarios/documento';
 
 const mapaSeveridadeDiagnosticos: Record<string | number, DiagnosticSeverity> = {
@@ -105,7 +105,7 @@ function formatarDiagnosticosAnaliseSemantica(
  * Armazena o resultado no cache e retorna diagnósticos LSP para publicação.
  */
 export async function executarAnalises(
-    documento: DocumentoLSP,
+    documento: DocumentoLSPInterface,
     chaveWorkspace: string
 ): Promise<Diagnostic[]> {
     const extensaoArquivo = obterExtensao(documento);

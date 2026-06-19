@@ -1,4 +1,4 @@
-import { AmbienteLSP } from '../interfaces/ambiente-lsp-interface';
+import { AmbienteLSPInterface } from '../interfaces/ambiente-lsp-interface';
 
 /**
  * Converte um caminho de arquivo para uma URI `file://`.
@@ -13,7 +13,7 @@ export function caminhoParaUri(caminho: string): string {
  * extensões informadas, ignorando `node_modules` e diretórios ocultos.
  */
 export async function varrerArquivosWorkspace(
-    ambiente: AmbienteLSP,
+    ambiente: AmbienteLSPInterface,
     pastaRaiz: string,
     extensoes: string[]
 ): Promise<string[]> {

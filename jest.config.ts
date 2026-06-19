@@ -10,13 +10,7 @@ export default async (): Promise<Config.InitialOptions> => {
         transform: {
             '^.+\\.tsx?$': ['ts-jest', {
                 isolatedModules: false,
-                tsconfig: {
-                    sourceMap: true,
-                    inlineSourceMap: true,
-                    inlineSources: true,
-                    types: ['node', 'jest'],
-                    strict: false,
-                }
+                tsconfig: 'testes/tsconfig.json',
             }]
         },
         coverageReporters: ['json-summary', 'lcov', 'text', 'text-summary'],

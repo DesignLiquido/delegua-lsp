@@ -1,10 +1,10 @@
-import { DocumentoLSP } from '../interfaces/documento-lsp-interface';
+import { DocumentoLSPInterface } from '../interfaces/documento-lsp-interface';
 
 /**
  * Obtém a extensão do arquivo associada ao documento, usada para selecionar
  * lexador/avaliador/analisador/formatador específicos do dialeto.
  */
-export function obterExtensao(documento: DocumentoLSP): string {
+export function obterExtensao(documento: DocumentoLSPInterface): string {
     if (documento.languageId === 'delegua-testes') {
         return 'delegua';
     }

@@ -3,6 +3,8 @@ export * from './caches';
 export * from './completude';
 export * from './definicao-etiqueta-documentario-interface';
 export * from './documento-lsp-interface';
+export * from './entrada-diretorio-interface';
+export * from './intervalo-palavra-interface';
 export * from './manipulador-caminhos-interface';
 export * from './resultado-analise-interface';
 export * from './sistema-arquivos-interface';

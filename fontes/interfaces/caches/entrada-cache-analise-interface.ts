@@ -1,12 +1,12 @@
 import { ResultadoAnaliseInterface } from "../resultado-analise-interface";
 
-export interface EntradaCacheAnalise {
+export interface EntradaCacheAnaliseInterface {
     resultado: ResultadoAnaliseInterface;
     diagnosticos: any[];
     dependenciasArquivos: string[];
     criadoEm: number;
     expiraEm: number;
-    ttlMs: number;
+    tempoVidaMs: number;
     versaoDocumento?: number;
     hashConteudo?: number;
     motivo?: string;

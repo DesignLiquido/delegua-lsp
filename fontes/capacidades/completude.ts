@@ -15,7 +15,7 @@ import { obterResultado } from '../analise/cache-analise';
 import { formatarPrimitivas, funcoesNativasDelegua } from '../bibliotecas/formatadores';
 import { primitivasMetodosLiquido, objetosEmRotaLiquido } from '../bibliotecas/primitivas-liquido';
 import { definicoesTagsDocumentario } from '../documentacao-em-editor/etiquetas-documentarios';
-import { DocumentoLSP } from '../interfaces/documento-lsp-interface';
+import { DocumentoLSPInterface } from '../interfaces/documento-lsp-interface';
 import { MetodoParametro, ParametroDetectado, PropriedadeParametro, TipoParametro } from '../interfaces/completude';
 
 const primitivasDicionarioFormatadas = formatarPrimitivas(primitivasDicionario);
@@ -423,12 +423,12 @@ function completudesParaDelegua(
     }));
 }
 
-// ─── entry point ────────────────────────────────────────────────────────────
+// ─── ponto de entrada ────────────────────────────────────────────────────────────
 
 /**
  * Fornece sugestões de completude para o símbolo na posição dada.
  */
-export function proverItensCompletude(documento: DocumentoLSP, posicao: Position): CompletionItem[] {
+export function proverItensCompletude(documento: DocumentoLSPInterface, posicao: Position): CompletionItem[] {
     const resultadoAnalise = obterResultado(documento.uri);
     const linhaTexto = documento.linhas[posicao.line] ?? '';
     const textoAntesPosicao = linhaTexto.substring(0, posicao.character);
@@ -492,6 +492,16 @@ export function proverItensCompletude(documento: DocumentoLSP, posicao: Position
     switch (detalhesEscopo.tipoEscopo) {
         case 'rotaGet':
         case 'rotaPost':
+        case 'rotaPut':
+        case 'rotaPatch':
+        case 'rotaDelete':
+        case 'rotaOptions':
+        case 'rotaCopy':
+        case 'rotaHead':
+        case 'rotaLock':
+        case 'rotaUnlock':
+        case 'rotaPurge':
+        case 'rotaPropfind':
             return objetosEmRotaLiquido.map(obj => ({
                 label: obj.nome,
                 kind: CompletionItemKind.Function,

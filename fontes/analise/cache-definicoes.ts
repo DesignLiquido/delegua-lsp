@@ -1,12 +1,12 @@
 import { Declaracao } from '@designliquido/delegua/declaracoes';
 
-import { EntradaCacheDefinicoes, OpcoesDefinirDefinicoes } from "../interfaces/caches";
+import { EntradaCacheDefinicoesInterface, OpcoesCacheDefinicoesInterface } from "../interfaces/caches";
 
-export const TTL_PADRAO_CACHE_DEFINICOES_MS = 60 * 60 * 1000;
+export const TEMPO_VIDA_PADRAO_CACHE_DEFINICOES_MS = 60 * 60 * 1000;
 
-const cache = new Map<string, EntradaCacheDefinicoes>();
+const cache = new Map<string, EntradaCacheDefinicoesInterface>();
 
-function obterEntradaValida(chave: string): EntradaCacheDefinicoes | undefined {
+function obterEntradaValida(chave: string): EntradaCacheDefinicoesInterface | undefined {
     const entrada = cache.get(chave);
     if (!entrada) {
         return undefined;
@@ -20,15 +20,15 @@ function obterEntradaValida(chave: string): EntradaCacheDefinicoes | undefined {
     return entrada;
 }
 
-export function definirDefinicoes(chave: string, definicoes: { [nomeTipo: string]: Declaracao }, opcoes?: OpcoesDefinirDefinicoes): void {
+export function definirDefinicoes(chave: string, definicoes: { [nomeTipo: string]: Declaracao }, opcoes?: OpcoesCacheDefinicoesInterface): void {
     const agora = Date.now();
-    const ttlMs = opcoes?.ttlMs ?? TTL_PADRAO_CACHE_DEFINICOES_MS;
+    const tempoVidaMs = opcoes?.tempoVidaMs ?? TEMPO_VIDA_PADRAO_CACHE_DEFINICOES_MS;
 
     cache.set(chave, {
         definicoes,
         criadoEm: agora,
-        expiraEm: agora + ttlMs,
-        ttlMs,
+        expiraEm: agora + tempoVidaMs,
+        tempoVidaMs: tempoVidaMs,
         motivo: opcoes?.motivo,
     });
 }

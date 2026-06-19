@@ -4,7 +4,7 @@ import { MarkupContent } from 'vscode-languageserver-types';
 
 import { expirarTudo, definirResultado } from '../fontes/analise/cache-analise';
 import { proverDocumentacaoEmCodigo } from '../fontes/capacidades/documentacao-em-codigo';
-import { DocumentoLSP } from '../fontes/interfaces/documento-lsp-interface';
+import { DocumentoLSPInterface } from '../fontes/interfaces/documento-lsp-interface';
 
 function criarSimbolo(lexema: string): any {
     return { lexema, tipo: 'IDENTIFICADOR', literal: null, linha: 1, hashArquivo: 0 };
@@ -28,7 +28,7 @@ function criarClasseDeclaracao(lexema: string): Classe {
     return new Classe(criarSimbolo(lexema), [], []);
 }
 
-function criarDocumento(linhas: string[], uri = 'file:///teste.delegua', nomeArquivo = 'teste.delegua', languageId = 'delegua'): DocumentoLSP {
+function criarDocumento(linhas: string[], uri = 'file:///teste.delegua', nomeArquivo = 'teste.delegua', languageId = 'delegua'): DocumentoLSPInterface {
     const texto = linhas.join('\n');
     return {
         uri,
