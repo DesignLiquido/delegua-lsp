@@ -6,7 +6,8 @@
         "strict": false,
         "noEmit": true,
         "module": "commonjs",
-        "moduleResolution": "node"
+        "moduleResolution": "node10",
+        "ignoreDeprecations": "6.0"
     },
     "include": [
         "../fontes/**/*",
